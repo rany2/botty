@@ -195,7 +195,13 @@ class IRCClient:
     """
 
     def __init__(
-        self, _server_addr, _server_port, _server_pass, _server_nick, _channels_to_join
+        self,
+        _server_addr,
+        _server_port,
+        _server_pass,
+        _server_nick,
+        _channels_to_join,
+        _nickserv_pass,
     ):
         """
         __init__ is the constructor for the IRCClient class.
@@ -206,6 +212,7 @@ class IRCClient:
             _server_pass: The password to use when connecting to the IRC server.
             _server_nick: The nickname to use when connecting to the IRC server.
             _channels_to_join: A list of channels to join when connecting to the IRC server.
+            _nickserv_pass: The password to use when connecting to the NickServ service.
 
         Returns:
             None
@@ -219,6 +226,7 @@ class IRCClient:
         self.server_pass = _server_pass
         self.server_nick = _server_nick
         self.channels_to_join = _channels_to_join
+        self.nickserv_pass = _nickserv_pass
         self.sock = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
         self.sock.connect((self.server_addr, self.server_port))
         self.initialize()
@@ -243,6 +251,11 @@ class IRCClient:
         # We must wait for the server to send us data before joining any channels
         self.recv()
         self.recv()
+        if self.nickserv_pass is not None:
+            self.send(
+                f"PRIVMSG NickServ :IDENTIFY {self.nickserv_pass} {self.server_nick}"
+            )
+            self.recv()
         for channel in CHANNELS_TO_JOIN:
             self.send(f"JOIN {channel}")
         self.decider()
