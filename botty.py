@@ -105,7 +105,7 @@ def mkurltitle(s, target, rmsg):
     """
     iterations = 0
     bypass = False
-    for url_irc in urlregex.findall(rmsg):
+    for url_irc in urlregex.findall(ircspecial.sub("", rmsg)):
         iterations += 1
         if iterations > 2:
             continue
