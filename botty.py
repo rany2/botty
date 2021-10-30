@@ -8,6 +8,7 @@ import json
 import re
 import socket
 import threading
+import time
 import urllib.parse
 from datetime import datetime, timedelta
 
@@ -244,20 +245,20 @@ class IRCClient:
             None
         """
         self.send(f"PASS {self.server_pass}")
+        self.decider(run_once=True)
         self.send(f"NICK {self.server_nick}")
+        self.decider(run_once=True)
         self.send(
             f"USER {self.server_nick} {self.server_nick} {self.server_nick} :{self.server_nick}"
         )
-        # We must wait for the server to send us data before joining any channels
-        self.recv()
-        self.recv()
+        self.decider(run_once=True)
         if self.nickserv_pass is not None:
-            self.send(
-                f"PRIVMSG NickServ :IDENTIFY {self.nickserv_pass} {self.server_nick}"
-            )
-            self.recv()
+            self.send(f"PRIVMSG NickServ :IDENTIFY {self.nickserv_pass}\r\n")
+            self.decider(run_once=True)
+        time.sleep(1)
         for channel in CHANNELS_TO_JOIN:
             self.send(f"JOIN {channel}")
+            self.decider(run_once=True)
         self.decider()
 
     def send(self, msg):
@@ -366,7 +367,7 @@ class IRCClient:
         """
         self.send(f"PRIVMSG {target} :{msg}".encode("utf-8")[:510].decode("utf-8"))
 
-    def decider(self):
+    def decider(self, run_once=False):
         """
         decider is a helper function that decides what to do with the message
         received from the IRC server.
@@ -389,6 +390,16 @@ class IRCClient:
                         target=self.privmsg_handler, args=(ircmsg,)
                     ).start()
 
+            if run_once:
+                break
+
 
 if __name__ == "__main__":
-    IRCClient(SERVER_ADDR, SERVER_PORT, SERVER_PASS, SERVER_NICK, CHANNELS_TO_JOIN, NICKSERV_PASS)
+    IRCClient(
+        SERVER_ADDR,
+        SERVER_PORT,
+        SERVER_PASS,
+        SERVER_NICK,
+        CHANNELS_TO_JOIN,
+        NICKSERV_PASS,
+    )
