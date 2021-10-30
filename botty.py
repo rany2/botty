@@ -12,19 +12,11 @@ import urllib.parse
 from datetime import datetime, timedelta
 
 import humanize
-import requests
 import magic
+import requests
 
+from config import *
 from webpreview import web_preview
-
-"""
-Configuration options for the IRC bot.
-"""
-SERVER_ADDR = "fdfb:1a20:a9bf:1000::7ab8"
-SERVER_PORT = 6667
-SERVER_PASS = "none"
-SERVER_NICK = "ranybottyforrnb"
-CHANNELS_TO_JOIN = ["#general"]
 
 """
 Regex patterns for the bot.

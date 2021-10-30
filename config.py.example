@@ -1,0 +1,9 @@
+"""
+Configuration options for the IRC bot.
+"""
+
+SERVER_ADDR = "fdfb:1a20:a9bf:1000::7ab8"
+SERVER_PORT = 6667
+SERVER_PASS = "none"
+SERVER_NICK = "ranybottyforrnb"
+CHANNELS_TO_JOIN = ["#general"]
