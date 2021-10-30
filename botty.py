@@ -35,19 +35,19 @@ headers = {
 }
 
 
-def translate(text, tolang="en"):
+def translate(text, to_lang="en"):
     """
     translate text to the specified language
 
     Args:
         text (str): text to translate
-        tolang (str): language to translate to
+        to_lang (str): language to translate to
 
     Returns:
         str: translated text
     """
 
-    url = f"https://translate.google.com/translate_a/single?client=gtx&sl=auto&tl={urllib.parse.quote_plus(tolang)}&dt=t&q={urllib.parse.quote_plus(text)}"
+    url = f"https://translate.google.com/translate_a/single?client=gtx&sl=auto&tl={urllib.parse.quote_plus(to_lang)}&dt=t&q={urllib.parse.quote_plus(text)}"
     response = requests.get(url)
     data = json.loads(response.text)
     new_data = ""
@@ -62,7 +62,7 @@ def ytoutput(video_id):
     and displays it in a nice IRC friendly format.
 
     Args:
-        videoId (str): the video id of the video to get info for
+        video_id (str): the video id of the video to get info for
 
     Returns:
         str: the formatted info
@@ -168,7 +168,7 @@ def mkurltitle(s, target, rmsg):
                 # title = title + length
             except LookupError:
                 title, description, image = None, None, None
-            
+
             if title is None:
                 g = magic.Magic()
                 title, description, image = [
@@ -288,7 +288,7 @@ class IRCClient:
             privmsg: The message itself.
             netmask: The netmask of the user who sent the message.
             is_channel: Whether or not the message was sent in a channel.
-        
+
         Returns:
             None
         """
@@ -306,7 +306,7 @@ class IRCClient:
         nick = msg.split("!", 1)[0][1:]
         source = msg.split("PRIVMSG", 1)[1].split(":", 1)[0].split(" ")[1]
         privmsg = msg.split("PRIVMSG", 1)[1].split(":", 1)[1]
-        netmask = '@'.join(msg.split('@')[0:2]).split(' ', maxsplit=1)[0]
+        netmask = "@".join(msg.split("@")[0:2]).split(" ", maxsplit=1)[0]
         is_channel = True
         # If the message was not received from the channel,
         # we set the source to the nick so the rest of the code
