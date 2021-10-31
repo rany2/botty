@@ -10,6 +10,7 @@ import time
 
 from config import *
 
+
 class IRCClient:
     """
     IRCClient class is a simple IRC client.

@@ -46,6 +46,7 @@ def translate(text, to_lang="en"):
         new_data += f"{iter_data[0]}"
     return new_data
 
+
 def ytoutput(video_id):
     """
     ytoutput gets the title, description, and other info of a youtube video
@@ -99,7 +100,7 @@ def mkurltitle(nick, source, privmsg, netmask, is_channel, send_message):
         netmask (str): the netmask of the user who sent the message
         is_channel (bool): whether or not the message was sent in a channel
         send_message (function): a function used to send a message to the correct location
-    
+
     Returns:
         None: this function does not return anything
     """
@@ -189,6 +190,7 @@ def mkurltitle(nick, source, privmsg, netmask, is_channel, send_message):
             except:
                 continue
 
+
 def mktranslate(nick, source, privmsg, netmask, is_channel, send_message):
     """
     mktranslate translates a message into a different language.
@@ -200,7 +202,7 @@ def mktranslate(nick, source, privmsg, netmask, is_channel, send_message):
         netmask (str): the netmask of the user who sent the message
         is_channel (bool): whether or not the message was sent in a channel
         send_message (function): a function used to send a message to the correct location
-    
+
     Returns:
         None: this function does not return anything
     """
@@ -218,3 +220,38 @@ def mktranslate(nick, source, privmsg, netmask, is_channel, send_message):
             send_message(f"{nick}, {transed}", source)
         else:
             send_message(f"{transed}", source)
+
+
+def deavmicomedy(text):
+    """
+    deavmicomedy turns a message into a funny one.
+    """
+    haha = ""
+    for ch in text:
+        haha += f"{ch} "
+    return haha[:-1]
+
+
+def mkdeavmicomedy(nick, source, privmsg, netmask, is_channel, send_message):
+    """
+    mkdeavmicomedy turns the text it receives into something of comedic value
+    for deavmi.
+
+    Args:
+        nick (str): the nick of the user who sent the message
+        source (str): the channel or nick the message came from
+        privmsg (str): the message
+        netmask (str): the netmask of the user who sent the message
+        is_channel (bool): whether or not the message was sent in a channel
+        send_message (function): a function used to send a message to the correct location
+
+    Returns:
+        None: this function does not return anything
+    """
+    if privmsg.startswith(".deavmicomedy"):
+        if is_channel:
+            send_message(
+                f'{nick}, {deavmicomedy(privmsg[len(".deavmicomedy "):])}', source
+            )
+        else:
+            send_message(f'{deavmicomedy(privmsg[len(".deavmicomedy ") :])}', source)
