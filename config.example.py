@@ -14,5 +14,6 @@ MODULES = [
     modules.mktranslate,
     modules.mkdeavmicomedy,
     modules.mkrot13,
+    modules.mkreversed,
     modules.mkurltitle,
 ]

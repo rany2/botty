@@ -10,6 +10,7 @@ from datetime import datetime, timedelta
 import humanize
 import magic
 import requests
+import urllib3.exceptions
 
 from webpreview import web_preview
 
@@ -121,6 +122,8 @@ def mkurltitle(nick, source, privmsg, netmask, is_channel, send_message):
                 url_with_http, allow_redirects=True, headers=headers
             )
         except requests.exceptions.RequestException:
+            continue
+        except urllib3.exceptions.LocationParseError:
             continue
         url = response.url
         parsed_url = urllib.parse.urlparse(url)
@@ -253,7 +256,7 @@ def mkdeavmicomedy(nick, source, privmsg, netmask, is_channel, send_message):
     Returns:
         None: this function does not return anything
     """
-    if privmsg.startswith(".deavmicomedy"):
+    if privmsg.startswith(".deavmicomedy "):
         if is_channel:
             send_message(
                 f'{nick}, {deavmicomedy(privmsg[len(".deavmicomedy "):])}', source
@@ -277,7 +280,7 @@ def mkreversed(nick, source, privmsg, netmask, is_channel, send_message):
     Returns:
         None: this function does not return anything
     """
-    if privmsg.startswith(".rev"):
+    if privmsg.startswith(".rev "):
         if is_channel:
             send_message(f'{nick}, {privmsg[len(".rev ") :][::-1]}', source)
         else:
@@ -321,7 +324,7 @@ def mkrot13(nick, source, privmsg, netmask, is_channel, send_message):
     Returns:
         None: this function does not return anything
     """
-    if privmsg.startswith(".rot13"):
+    if privmsg.startswith(".rot13 "):
         if is_channel:
             send_message(f'{nick}, {rot13(privmsg[len(".rot13 ") :])}', source)
         else:
