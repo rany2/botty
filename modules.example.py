@@ -1,3 +1,7 @@
+"""
+Example modules for the bot.
+"""
+
 import json
 import re
 import urllib.parse
@@ -9,14 +13,12 @@ import requests
 
 from webpreview import web_preview
 
-"""
-Regex patterns for the bot.
-"""
+# Regex patterns for the bot.
 ircspecial = re.compile(
-    "\x1f|\x01|\x02|\x12|\x0f|\x1d|\x16|\x0f(?:\d{1,2}(?:,\d{1,2})?)?|\x03(?:\d{1,2}(?:,\d{1,2})?)?",
+    r"\x1f|\x01|\x02|\x12|\x0f|\x1d|\x16|\x0f(?:\d{1,2}(?:,\d{1,2})?)?|\x03(?:\d{1,2}(?:,\d{1,2})?)?",
     re.UNICODE,
 )
-urlregex = re.compile("((https?://|[\S]*\.[\S]|\[[^\]]*\])([\S]*))")
+urlregex = re.compile(r"((https?://|[\S]*\.[\S]|\[[^\]]*\])([\S]*))")
 ytregex = re.compile(r"(\.|^)(youtube\.com|youtu\.be)$")
 twregex = re.compile(r"(\.|^)twitter\.com$")
 headers = {
@@ -71,7 +73,7 @@ def ytoutput(video_id):
     downvote = json_load["dislikeCount"]
     try:
         ratio = f"{(upvote/(downvote+upvote) * 100):.1f}%"
-    except:
+    except ZeroDivisionError:
         ratio = "0%"
     upvote = humanize.intcomma(upvote)
     downvote = humanize.intcomma(downvote)
@@ -91,7 +93,7 @@ def ytoutput(video_id):
 
 def mkurltitle(nick, source, privmsg, netmask, is_channel, send_message):
     """
-    mkuurl gets the title of a URL and displays it in a nice IRC friendly format.
+    mkurltitle gets the title of a URL and displays it in a nice IRC friendly format.
 
     Args:
         nick (str): the nick of the user who sent the message
@@ -104,10 +106,8 @@ def mkurltitle(nick, source, privmsg, netmask, is_channel, send_message):
     Returns:
         None: this function does not return anything
     """
-    iterations = 0
     bypass = False
-    for url_irc in urlregex.findall(ircspecial.sub("", privmsg)):
-        iterations += 1
+    for iterations, url_irc in enumerate(urlregex.findall(ircspecial.sub("", privmsg))):
         if iterations > 2:
             continue
         url_irc = url_irc[0]
@@ -117,78 +117,73 @@ def mkurltitle(nick, source, privmsg, netmask, is_channel, send_message):
             else "http://" + url_irc
         )
         try:
-            r = requests.head(url_with_http, allow_redirects=True, headers=headers)
-        except:
+            response = requests.head(url_with_http, allow_redirects=True, headers=headers)
+        except requests.exceptions.RequestException:
             continue
-        url = r.url
-        p = urllib.parse.urlparse(url)
-        if ytregex.search(p.netloc):
+        url = response.url
+        parsed_url = urllib.parse.urlparse(url)
+        if ytregex.search(parsed_url.netloc):
             try:
-                p = urllib.parse.urlparse(
-                    "".join(urllib.parse.parse_qs(p.query)["continue"])
+                parsed_url = urllib.parse.urlparse(
+                    "".join(urllib.parse.parse_qs(parsed_url.query)["continue"])
                 )
-            except:
+            except KeyError:
                 pass
 
             try:
-                finalmsg = [ytoutput(urllib.parse.parse_qs(p.query)["v"][0])]
+                finalmsg = [ytoutput(urllib.parse.parse_qs(parsed_url.query)["v"][0])]
                 bypass = True
-            except:
-                p = p._replace(netloc="yewtu.be")
-        elif twregex.search(p.netloc):
-            p = p._replace(netloc="nitter.fdn.fr")
+            except KeyError:
+                parsed_url = parsed_url._replace(netloc="yewtu.be")
+        elif twregex.search(parsed_url.netloc):
+            parsed_url = parsed_url._replace(netloc="nitter.fdn.fr")
         if not bypass:
-            urlNew = urllib.parse.urlunparse(p)
+            url_new = urllib.parse.urlunparse(parsed_url)
             try:
-                r = requests.get(
-                    urlNew, allow_redirects=True, stream=True, headers=headers
+                response = requests.get(
+                    url_new, allow_redirects=True, stream=True, headers=headers
                 )
-            except:
+            except requests.exceptions.RequestException:
                 continue
-            if r.status_code >= 400:
+            if response.status_code >= 400:
                 continue
             # read x chunk only ... should be enough for title, description and image.
-            for i in r.iter_content(chunk_size=2 ** 16, decode_unicode=False):
+            for i in response.iter_content(chunk_size=2 ** 16, decode_unicode=False):
                 content = i
                 break
             # Get encoding from magic module
-            f = magic.Magic(mime_encoding=True)
-            encoding = f.from_buffer(content)
+            encoding = magic.Magic(mime_encoding=True).from_buffer(content)
             length = ""
             try:
-                if r.headers["Content-Length"]:
+                if response.headers["Content-Length"]:
                     length = (
-                        " (" + humanize.naturalsize(r.headers["Content-Length"]) + ")"
+                        " (" + humanize.naturalsize(response.headers["Content-Length"]) + ")"
                     )
-            except:
+            except KeyError:
                 pass
 
             try:
                 title, description, image = web_preview(
-                    urlNew, content=content.decode(encoding), parser="lxml"
+                    url_new, content=content.decode(encoding), parser="lxml"
                 )
                 # title = title + length
             except LookupError:
                 title, description, image = None, None, None
 
             if title is None:
-                g = magic.Magic()
                 title, description, image = [
-                    g.from_buffer(content) + length,
+                    magic.Magic().from_buffer(content) + length,
                     None,
                     None,
                 ]
 
             if isinstance(title, str):
-                title = f'[ \x0303{p.netloc}\x03\x0F ] \x02{ircspecial.sub("", " ".join(title.split()))}'
+                title = f'[ \x0303{parsed_url.netloc}\x03\x0F ] \x02{ircspecial.sub("", " ".join(title.split()))}'
                 finalmsg = [title]  # , description ]
 
         if finalmsg is not None:
-            try:
-                for msg in finalmsg:
-                    send_message(msg, source)
-            except:
-                continue
+            for msg in finalmsg:
+                send_message(msg, source)
 
 
 def mktranslate(nick, source, privmsg, netmask, is_channel, send_message):
@@ -233,8 +228,8 @@ def deavmicomedy(text):
         str: the funnyified text
     """
     haha = ""
-    for ch in text:
-        haha += f"{ch} "
+    for character in text:
+        haha += f"{character} "
     return haha[:-1]
 
 
