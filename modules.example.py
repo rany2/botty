@@ -117,7 +117,9 @@ def mkurltitle(nick, source, privmsg, netmask, is_channel, send_message):
             else "http://" + url_irc
         )
         try:
-            response = requests.head(url_with_http, allow_redirects=True, headers=headers)
+            response = requests.head(
+                url_with_http, allow_redirects=True, headers=headers
+            )
         except requests.exceptions.RequestException:
             continue
         url = response.url
@@ -157,7 +159,9 @@ def mkurltitle(nick, source, privmsg, netmask, is_channel, send_message):
             try:
                 if response.headers["Content-Length"]:
                     length = (
-                        " (" + humanize.naturalsize(response.headers["Content-Length"]) + ")"
+                        " ("
+                        + humanize.naturalsize(response.headers["Content-Length"])
+                        + ")"
                     )
             except KeyError:
                 pass
@@ -256,3 +260,69 @@ def mkdeavmicomedy(nick, source, privmsg, netmask, is_channel, send_message):
             )
         else:
             send_message(f'{deavmicomedy(privmsg[len(".deavmicomedy ") :])}', source)
+
+
+def mkreversed(nick, source, privmsg, netmask, is_channel, send_message):
+    """
+    mkreversed reverses the text it receives.
+
+    Args:
+        nick (str): the nick of the user who sent the message
+        source (str): the channel or nick the message came from
+        privmsg (str): the message
+        netmask (str): the netmask of the user who sent the message
+        is_channel (bool): whether or not the message was sent in a channel
+        send_message (function): a function used to send a message to the correct location
+
+    Returns:
+        None: this function does not return anything
+    """
+    if privmsg.startswith(".rev"):
+        if is_channel:
+            send_message(f'{nick}, {privmsg[len(".rev ") :][::-1]}', source)
+        else:
+            send_message(f'{privmsg[len(".rev ") :][::-1]}', source)
+
+
+def rot13(text):
+    """
+    rot13 rotates the text it receives 13 characters to the right.
+
+    Args:
+        text (str): the text to be rotated
+
+    Returns:
+        str: the rotated text
+    """
+    rot13 = ""
+    for character in text:
+        if character.isalpha():
+            if character.isupper():
+                rot13 += chr((ord(character) - ord("A") + 13) % 26 + ord("A"))
+            else:
+                rot13 += chr((ord(character) - ord("a") + 13) % 26 + ord("a"))
+        else:
+            rot13 += character
+    return rot13
+
+
+def mkrot13(nick, source, privmsg, netmask, is_channel, send_message):
+    """
+    mkrot13 rotates the text it receives 13 places.
+
+    Args:
+        nick (str): the nick of the user who sent the message
+        source (str): the channel or nick the message came from
+        privmsg (str): the message
+        netmask (str): the netmask of the user who sent the message
+        is_channel (bool): whether or not the message was sent in a channel
+        send_message (function): a function used to send a message to the correct location
+
+    Returns:
+        None: this function does not return anything
+    """
+    if privmsg.startswith(".rot13"):
+        if is_channel:
+            send_message(f'{nick}, {rot13(privmsg[len(".rot13 ") :])}', source)
+        else:
+            send_message(f'{rot13(privmsg[len(".rot13 ") :])}', source)
