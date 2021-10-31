@@ -224,7 +224,13 @@ def mktranslate(nick, source, privmsg, netmask, is_channel, send_message):
 
 def deavmicomedy(text):
     """
-    deavmicomedy turns a message into a funny one.
+    deavmicomedy turns a boring text into a funny one.
+
+    Args:
+        text (str): the text to be funnyified
+
+    Returns:
+        str: the funnyified text
     """
     haha = ""
     for ch in text:
