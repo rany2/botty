@@ -10,41 +10,48 @@ import time
 
 from config import *
 
-def split_text(text, max_length):
+
+def split_text_by_bytes(text, max_length):
     """
-    split_text splits a string into multiple lines if it's too long by bytes.
+    split_text_by_bytes is a helper function that splits a utf-8 string
+    into multiple strings of a maximum byte length.
 
     Args:
-        text: The string to split.
-        max_length: The maximum length of a line.
+        text (str or bytes): The string to split.
+        max_length (int): The maximum length of each string.
 
-    Returns:
-        lines: A list of strings.
+    Yields:
+        A utf-8 bytes string.
     """
     if isinstance(text, str):
-        text = text.encode('utf-8')
-
-    lines = []
-    while len(text) > max_length:
-        if isinstance(text, str):
-            lines.append(text[:max_length])
-        else:
-            try:
-                lines.append(text[:max_length].decode('utf-8'))
-            except UnicodeDecodeError:
-                temporary_max_length = max_length
-                while True:
-                    try:
-                        lines.append(text[:temporary_max_length].decode('utf-8'))
-                        break
-                    except UnicodeDecodeError:
-                        temporary_max_length -= 1
-        text = text[max_length:]
-    if isinstance(text, str):
-        lines.append(text)
+        data = text.encode("utf-8")
+    elif isinstance(text, bytes):
+        data = text
     else:
-        lines.append(text.decode('utf-8'))
-    return lines
+        raise TypeError("text must be a string or bytes")
+    del text
+
+    while len(data) > 0:
+        if len(data) < max_length:
+            yield data.decode("utf-8")
+            break
+        else:
+            cutoff = max_length
+
+        while cutoff > 0 and data[cutoff - 1] & 0xC0 == 0x80:
+            cutoff -= 1
+
+        if cutoff > 0:
+            if data[cutoff - 1] & 0xE0 == 0xC0:
+                cutoff -= 1
+            if data[cutoff - 1] & 0xF0 == 0xE0:
+                cutoff -= 1
+            if data[cutoff - 1] & 0xF8 == 0xF0:
+                cutoff -= 1
+
+        yield data[:cutoff].decode("utf-8")
+        data = data[cutoff:]
+
 
 class IRCClient:
     """
@@ -128,7 +135,7 @@ class IRCClient:
             None
         """
         print(f"> {msg}")
-        self.sock.send(f"{msg}".encode("utf-8")[:510] + b"\r\n")
+        self.sock.send(f"{msg}".encode("utf-8") + b"\r\n")
 
     def recv(self):
         """
@@ -211,7 +218,7 @@ class IRCClient:
         # The length is 510 - the length of the prepend string because
         # \r\n is automatically added to the end of the message by
         # self.send().
-        for line in split_text(msg, max_length=510-prepend_length):
+        for line in split_text_by_bytes(msg, max_length=510 - prepend_length):
             self.send(f"{prepend}{line}")
 
     def decider(self, run_once=False):
