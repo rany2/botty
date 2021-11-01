@@ -10,6 +10,29 @@ import time
 
 from config import *
 
+def split_text(text, max_length):
+    """
+    split_text splits a string into multiple lines if it's too long by bytes.
+
+    Args:
+        text: The string to split.
+        max_length: The maximum length of a line.
+
+    Returns:
+        lines: A list of strings.
+    """
+    if isinstance(text, str):
+        text = text.encode('utf-8')
+
+    lines = []
+    while len(text) > max_length:
+        if isinstance(text, str):
+            lines.append(text[:max_length].decode('utf-8'))
+        else:
+            lines.append(text[:max_length])
+        text = text[max_length:]
+    lines.append(text)
+    return lines
 
 class IRCClient:
     """
@@ -171,7 +194,13 @@ class IRCClient:
         Returns:
             None
         """
-        self.send(f"PRIVMSG {target} :{msg}".encode("utf-8")[:510].decode("utf-8"))
+        prepend = f"PRIVMSG {target} :"
+        prepend_length = len(prepend.encode("utf-8"))
+        # The length is 510 - the length of the prepend string because
+        # \r\n is automatically added to the end of the message by
+        # self.send().
+        for line in split_text(msg, max_length=510-prepend_length):
+            self.send(f"{prepend}{line}")
 
     def decider(self, run_once=False):
         """
