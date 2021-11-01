@@ -31,7 +31,10 @@ def split_text(text, max_length):
         else:
             lines.append(text[:max_length].decode('utf-8'))
         text = text[max_length:]
-    lines.append(text)
+    if isinstance(text, str):
+        lines.append(text)
+    else:
+        lines.append(text.decode('utf-8'))
     return lines
 
 class IRCClient:
