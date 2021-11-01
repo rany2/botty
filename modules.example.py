@@ -332,7 +332,7 @@ def duckduckgo(query):
     Returns:
         str: the first result from the search
     """
-    url = "https://api.duckduckgo.com/?q={}&format=json&pretty=1".format(query)
+    url = "https://api.duckduckgo.com/?q={}&format=json&pretty=1".format(urllib.parse.quote_plus(query))
     response = requests.get(url)
     data = response.json()
     try:
