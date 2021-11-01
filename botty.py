@@ -29,7 +29,16 @@ def split_text(text, max_length):
         if isinstance(text, str):
             lines.append(text[:max_length])
         else:
-            lines.append(text[:max_length].decode('utf-8'))
+            try:
+                lines.append(text[:max_length].decode('utf-8'))
+            except UnicodeDecodeError:
+                temporary_max_length = max_length
+                while True:
+                    try:
+                        lines.append(text[:temporary_max_length].decode('utf-8'))
+                        break
+                    except UnicodeDecodeError:
+                        temporary_max_length -= 1
         text = text[max_length:]
     if isinstance(text, str):
         lines.append(text)
