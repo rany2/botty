@@ -321,3 +321,56 @@ def mkrot13(nick, source, privmsg, netmask, is_channel, send_message):
             send_message(f'{nick}, {rot13(privmsg[len(".rot13 ") :])}', source)
         else:
             send_message(f'{rot13(privmsg[len(".rot13 ") :])}', source)
+
+def duckduckgo(query):
+    """
+    duckduckgo returns the first result from a duckduckgo search.
+
+    Args:
+        query (str): the query to be searched
+
+    Returns:
+        str: the first result from the search
+    """
+    url = "https://api.duckduckgo.com/?q={}&format=json&pretty=1".format(query)
+    response = requests.get(url)
+    data = response.json()
+    try:
+        result = data["AbstractText"]
+        if result == "":
+            raise Exception
+        else:
+            return result
+    except (KeyError, Exception):
+        try:
+            # Get the first result
+            result = data["RelatedTopics"][0]["Text"]
+            if result == "":
+                raise Exception
+            else:
+                return result
+        except (KeyError, Exception):
+            return "No results found."
+
+def mkduckduckgo(nick, source, privmsg, netmask, is_channel, send_message):
+    """
+    mkduckduckgo searches DuckDuckGo for the text it receives.
+
+    Args:
+        nick (str): the nick of the user who sent the message
+        source (str): the channel or nick the message came from
+        privmsg (str): the message
+        netmask (str): the netmask of the user who sent the message
+        is_channel (bool): whether or not the message was sent in a channel
+        send_message (function): a function used to send a message to the correct location
+
+    Returns:
+        None: this function does not return anything
+    """
+    if privmsg.startswith(".ddg "):
+        if is_channel:
+            send_message(
+                f'{nick}, {duckduckgo(privmsg[len(".ddg ") :])}', source
+            )
+        else:
+            send_message(f'{duckduckgo(privmsg[len(".ddg ") :])}', source)

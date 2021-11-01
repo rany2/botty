@@ -225,8 +225,13 @@ class IRCClient:
         max_msg_length -= len("\r\n".encode("utf-8"))  # \r\n is sent automatically
         max_msg_length -= 9  # max possible username length
         max_msg_length -= 65  # max possible hostname length
-        for line in split_text_by_bytes(msg, max_length=max_msg_length):
-            self.send(f"PRIVMSG {target} :{line}")
+
+        if isinstance(msg, bytes):
+            msg = msg.decode("utf-8")
+
+        for line in msg.splitlines():
+            for split_line in split_text_by_bytes(line, max_length=max_msg_length):
+                self.send(f"PRIVMSG {target} :{split_line}")
 
     def decider(self, run_once=False):
         """
