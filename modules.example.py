@@ -2,6 +2,7 @@
 Example modules for the bot.
 """
 
+import codecs
 import json
 import re
 import urllib.parse
@@ -297,16 +298,7 @@ def rot13(text):
     Returns:
         str: the rotated text
     """
-    rot13 = ""
-    for character in text:
-        if character.isalpha():
-            if character.isupper():
-                rot13 += chr((ord(character) - ord("A") + 13) % 26 + ord("A"))
-            else:
-                rot13 += chr((ord(character) - ord("a") + 13) % 26 + ord("a"))
-        else:
-            rot13 += character
-    return rot13
+    return codecs.encode(text, "rot13")
 
 
 def mkrot13(nick, source, privmsg, netmask, is_channel, send_message):
