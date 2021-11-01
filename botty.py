@@ -21,36 +21,37 @@ def split_text_by_bytes(text, max_length):
         max_length (int): The maximum length of each string.
 
     Yields:
-        A utf-8 bytes string.
+        The split string.
     """
     if isinstance(text, str):
-        data = text.encode("utf-8")
-    elif isinstance(text, bytes):
         data = text
+    elif isinstance(text, bytes):
+        data = text.decode("utf-8")
     else:
         raise TypeError("text must be a string or bytes")
     del text
 
-    while len(data) > 0:
-        if len(data) < max_length:
-            yield data.decode("utf-8")
-            break
-        else:
-            cutoff = max_length
+    new_data = ""
+    for character in data:
+        new_data += character
+        if len(new_data.encode("utf-8")) > max_length:
+            new_new_data = new_data
+            new_data = ""
+            while len(new_new_data.encode("utf-8")) > max_length:
+                new_data += new_new_data[-1]
+                new_new_data = new_new_data[:-1]
 
-        while cutoff > 0 and data[cutoff - 1] & 0xC0 == 0x80:
-            cutoff -= 1
+            # Attempt to split at complete word.
+            if new_new_data.find(" ") != -1:
+                while new_new_data[-1] != " ":
+                    new_data = new_new_data[-1] + new_data
+                    new_new_data = new_new_data[:-1]
 
-        if cutoff > 0:
-            if data[cutoff - 1] & 0xE0 == 0xC0:
-                cutoff -= 1
-            if data[cutoff - 1] & 0xF0 == 0xE0:
-                cutoff -= 1
-            if data[cutoff - 1] & 0xF8 == 0xF0:
-                cutoff -= 1
+            yield new_new_data
+            del new_new_data
 
-        yield data[:cutoff].decode("utf-8")
-        data = data[cutoff:]
+    if len(new_data) > 0:
+        yield new_data
 
 
 class IRCClient:
@@ -213,13 +214,19 @@ class IRCClient:
         Returns:
             None
         """
-        prepend = f"PRIVMSG {target} :"
-        prepend_length = len(prepend.encode("utf-8"))
-        # The length is 510 - the length of the prepend string because
-        # \r\n is automatically added to the end of the message by
-        # self.send().
-        for line in split_text_by_bytes(msg, max_length=510 - prepend_length):
-            self.send(f"{prepend}{line}")
+        # ref:
+        #  - https://github.com/hexchat/hexchat/blob/9039a5d75ba854d00bfbd9bb5235ec547eeffbe1/src/common/outbound.c#L2641-L2695
+        #  - https://github.com/hexchat/hexchat/blob/f42f6af1b96f80280a2e5a5e2431dc32d2b8fd55/src/common/proto-irc.c
+        #
+        # :nickname!username@host.com cmd_length
+        max_msg_length = 512  # rfc 2812
+        max_msg_length -= 3  # :, !, @
+        max_msg_length -= len(f"PRIVMSG {target} :".encode("utf-8"))  # cmd length
+        max_msg_length -= len("\r\n".encode("utf-8"))  # \r\n is sent automatically
+        max_msg_length -= 9  # max possible username length
+        max_msg_length -= 65  # max possible hostname length
+        for line in split_text_by_bytes(msg, max_length=max_msg_length):
+            self.send(f"PRIVMSG {target} :{line}")
 
     def decider(self, run_once=False):
         """
