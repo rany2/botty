@@ -201,7 +201,11 @@ class IRCClient:
 
         # Run the functions
         for module in MODULES:
-            module(nick, source, privmsg, netmask, is_channel, self.send_message)
+            if (
+                module(nick, source, privmsg, netmask, is_channel, self.send_message)
+                == True
+            ):
+                break
 
     def send_message(self, msg, target):
         """

@@ -106,8 +106,9 @@ def mkurltitle(nick, source, privmsg, netmask, is_channel, send_message):
         send_message (function): a function used to send a message to the correct location
 
     Returns:
-        None: this function does not return anything
+        None if mkurltitle was not used, True if it was used
     """
+    ret = None
     bypass = False
     for iterations, url_irc in enumerate(urlregex.findall(ircspecial.sub("", privmsg))):
         if iterations > 2:
@@ -192,6 +193,8 @@ def mkurltitle(nick, source, privmsg, netmask, is_channel, send_message):
         if finalmsg is not None:
             for msg in finalmsg:
                 send_message(msg, source)
+                ret = True
+    return ret
 
 
 def mktranslate(nick, source, privmsg, netmask, is_channel, send_message):
@@ -207,8 +210,9 @@ def mktranslate(nick, source, privmsg, netmask, is_channel, send_message):
         send_message (function): a function used to send a message to the correct location
 
     Returns:
-        None: this function does not return anything
+        None if mktranslate was not used, True if it was used
     """
+    ret = None
     if privmsg.startswith(".tr ") or privmsg.startswith(".tr:"):
         if privmsg.startswith(".tr:"):
             privmsg = privmsg[len(".tr") :]
@@ -223,6 +227,8 @@ def mktranslate(nick, source, privmsg, netmask, is_channel, send_message):
             send_message(f"{nick}, {transed}", source)
         else:
             send_message(f"{transed}", source)
+        ret = True
+    return ret
 
 
 def deavmicomedy(text):
@@ -255,8 +261,9 @@ def mkdeavmicomedy(nick, source, privmsg, netmask, is_channel, send_message):
         send_message (function): a function used to send a message to the correct location
 
     Returns:
-        None: this function does not return anything
+        None if mkdeavmicomedy was not used, True if it was used
     """
+    ret = None
     if privmsg.startswith(".deavmicomedy "):
         if is_channel:
             send_message(
@@ -264,6 +271,8 @@ def mkdeavmicomedy(nick, source, privmsg, netmask, is_channel, send_message):
             )
         else:
             send_message(f'{deavmicomedy(privmsg[len(".deavmicomedy ") :])}', source)
+        ret = True
+    return ret
 
 
 def mkreversed(nick, source, privmsg, netmask, is_channel, send_message):
@@ -279,13 +288,16 @@ def mkreversed(nick, source, privmsg, netmask, is_channel, send_message):
         send_message (function): a function used to send a message to the correct location
 
     Returns:
-        None: this function does not return anything
+        None if mkreversed was not used, True if it was used
     """
+    ret = None
     if privmsg.startswith(".rev "):
         if is_channel:
             send_message(f'{nick}, {privmsg[len(".rev ") :][::-1]}', source)
         else:
             send_message(f'{privmsg[len(".rev ") :][::-1]}', source)
+        ret = True
+    return ret
 
 
 def rot13(text):
@@ -314,13 +326,17 @@ def mkrot13(nick, source, privmsg, netmask, is_channel, send_message):
         send_message (function): a function used to send a message to the correct location
 
     Returns:
-        None: this function does not return anything
+        None if mkrot13 was not used, True if it was used
     """
+    ret = None
     if privmsg.startswith(".rot13 "):
         if is_channel:
             send_message(f'{nick}, {rot13(privmsg[len(".rot13 ") :])}', source)
         else:
             send_message(f'{rot13(privmsg[len(".rot13 ") :])}', source)
+        ret = True
+    return ret
+
 
 def duckduckgo(query):
     """
@@ -332,7 +348,9 @@ def duckduckgo(query):
     Returns:
         str: the first result from the search
     """
-    url = "https://api.duckduckgo.com/?q={}&format=json&pretty=1".format(urllib.parse.quote_plus(query))
+    url = "https://api.duckduckgo.com/?q={}&format=json&pretty=1".format(
+        urllib.parse.quote_plus(query)
+    )
     response = requests.get(url)
     data = response.json()
     try:
@@ -352,6 +370,7 @@ def duckduckgo(query):
         except (KeyError, Exception):
             return "No results found."
 
+
 def mkduckduckgo(nick, source, privmsg, netmask, is_channel, send_message):
     """
     mkduckduckgo searches DuckDuckGo for the text it receives.
@@ -365,12 +384,14 @@ def mkduckduckgo(nick, source, privmsg, netmask, is_channel, send_message):
         send_message (function): a function used to send a message to the correct location
 
     Returns:
-        None: this function does not return anything
+        None if mkduckduckgo was not used, True if it was used
     """
+    ret = None
     if privmsg.startswith(".ddg "):
+        ret = True
         if is_channel:
-            send_message(
-                f'{nick}, {duckduckgo(privmsg[len(".ddg ") :])}', source
-            )
+            send_message(f'{nick}, {duckduckgo(privmsg[len(".ddg ") :])}', source)
         else:
             send_message(f'{duckduckgo(privmsg[len(".ddg ") :])}', source)
+        ret = True
+    return ret
