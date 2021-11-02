@@ -106,7 +106,8 @@ class SedBot:
             return None
 
         try:
-            a_poor_mans_sed_implementation(self.messages[source], source)
+            sed_result = a_poor_mans_sed_implementation(self.messages[source], source)
+            send_message(f"{nick}, {sed_result}", source)
         except KeyError:
             pass
 

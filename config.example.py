@@ -6,12 +6,12 @@ from modules.ddg import DuckDuckGo
 from modules.deavmicomedy import deavmicomedy
 from modules.reversed import mkreversed
 from modules.rot13 import rot13
-from modules.sedbot import Sedbot
+from modules.sedbot import SedBot
 from modules.translate import Translate
 from modules.urltitle import UrlTitle
 
 duckduckgo = DuckDuckGo()
-sedbot = Sedbot()
+sedbot = SedBot()
 translate = Translate()
 urltitle = UrlTitle()
 
