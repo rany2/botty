@@ -6,10 +6,12 @@ from modules.ddg import DuckDuckGo
 from modules.deavmicomedy import deavmicomedy
 from modules.reversed import mkreversed
 from modules.rot13 import rot13
+from modules.sedbot import Sedbot
 from modules.translate import Translate
 from modules.urltitle import UrlTitle
 
 duckduckgo = DuckDuckGo()
+sedbot = Sedbot()
 translate = Translate()
 urltitle = UrlTitle()
 
@@ -22,6 +24,7 @@ CHANNELS_TO_JOIN = ["#rany2", "#general"]
 # Order matters.
 MODULES = [
     # These are commands and they must be specified first.
+    sedbot.sed,
     duckduckgo.duckduckgo,
     deavmicomedy,
     rot13,
