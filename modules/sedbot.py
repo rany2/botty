@@ -21,6 +21,12 @@ def a_poor_mans_sed_implementation(text, sed_pattern):
     re_pattern = ""
     re_replacement = ""
 
+    # By default, sed only matches the first occurrence of the pattern.
+    re_count = 1
+
+    # Sed matches all characters (including the \n ) using a dot .
+    re_flags = re.DOTALL
+
     # Remove the substitution pattern from the sed pattern
     # if it is present.
     if sed_pattern[0] == "s":
@@ -68,8 +74,23 @@ def a_poor_mans_sed_implementation(text, sed_pattern):
         # Add the character to the re_replacement
         re_replacement += character
 
+    # Split sed_pattern into re_flags
+    for character in sed_pattern[len(re_pattern) + len(re_replacement) + 2 :]:
+        if character == "g":
+            re_count = 0
+        elif character.lower() == "i":
+            re_flags |= re.IGNORECASE
+        elif character.lower() == "m":
+            re_flags |= re.MULTILINE
+
     # Do the replacement
-    return re.sub(re_pattern, re_replacement, text)
+    return re.sub(
+        re_pattern,
+        re_replacement,
+        text,
+        count=re_count,
+        flags=re_flags,
+    )
 
 
 class SedBot:
