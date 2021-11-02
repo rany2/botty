@@ -42,8 +42,7 @@ def a_poor_mans_sed_implementation(text, sed_pattern):
                 re_pattern += character
                 old_character = ""
                 continue
-            else:
-                break
+            break
 
         # Add the character to the re_pattern
         re_pattern += character
@@ -64,8 +63,7 @@ def a_poor_mans_sed_implementation(text, sed_pattern):
                 re_replacement += character
                 old_character = ""
                 continue
-            else:
-                break
+            break
 
         # Add the character to the re_replacement
         re_replacement += character
@@ -118,7 +116,7 @@ class SedBot:
                 self.messages[source][_netmask], _privmsg
             )
             send_message(f"{nick}, {sed_result}", source)
-        except KeyError:
+        except (KeyError, re.error):
             pass
 
         return True

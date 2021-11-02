@@ -9,13 +9,13 @@ import threading
 import time
 
 from config import (
-    SERVER_ADDR,
-    SERVER_PORT,
-    SERVER_NICK,
-    SERVER_PASS,
-    NICKSERV_PASS,
     CHANNELS_TO_JOIN,
     MODULES,
+    NICKSERV_PASS,
+    SERVER_ADDR,
+    SERVER_NICK,
+    SERVER_PASS,
+    SERVER_PORT,
 )
 
 
@@ -178,6 +178,7 @@ class IRCClient:
         Returns:
             None
         """
+        raise SystemExit(0)
 
     def privmsg_handler(self, msg):
         """
@@ -205,15 +206,19 @@ class IRCClient:
         # Handle CTCP requests in a separate function
         if privmsg.startswith("\x01"):
             self.ctcp_handler(msg, nick, source, privmsg, netmask, is_channel)
-            return
 
         # Run the functions
-        for module in MODULES:
-            if (
-                module(nick, source, privmsg, netmask, is_channel, self.send_message)
-                == True
-            ):
-                break
+        try:
+            for module in MODULES:
+                if (
+                    module(
+                        nick, source, privmsg, netmask, is_channel, self.send_message
+                    )
+                    == True
+                ):
+                    break
+        finally:
+            raise SystemExit(0)
 
     def send_message(self, msg, target):
         """
