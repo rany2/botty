@@ -101,12 +101,19 @@ class SedBot:
         if not is_channel:
             return None
 
+        _netmask = "!".join(netmask.split("!")[1:])
         if not privmsg.startswith("s/"):
-            self.messages[source] = privmsg
+            try:
+                self.messages[source][_netmask] = privmsg
+            except KeyError:
+                self.messages[source] = {}
+                self.messages[source][_netmask] = privmsg
             return None
 
         try:
-            sed_result = a_poor_mans_sed_implementation(self.messages[source], privmsg)
+            sed_result = a_poor_mans_sed_implementation(
+                self.messages[source][_netmask], privmsg
+            )
             send_message(f"{nick}, {sed_result}", source)
         except KeyError:
             pass
