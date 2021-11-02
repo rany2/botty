@@ -4,6 +4,8 @@ sedbot module for botty.
 
 import re
 
+from regexes import ircspecial
+
 
 def a_poor_mans_sed_implementation(text, sed_pattern):
     """
@@ -102,17 +104,18 @@ class SedBot:
             return None
 
         _netmask = "!".join(netmask.split("!")[1:])
+        _privmsg = ircspecial.sub("", privmsg.strip())
         if not privmsg.startswith("s/"):
             try:
-                self.messages[source][_netmask] = privmsg
+                self.messages[source][_netmask] = _privmsg
             except KeyError:
                 self.messages[source] = {}
-                self.messages[source][_netmask] = privmsg
+                self.messages[source][_netmask] = _privmsg
             return None
 
         try:
             sed_result = a_poor_mans_sed_implementation(
-                self.messages[source][_netmask], privmsg
+                self.messages[source][_netmask], _privmsg
             )
             send_message(f"{nick}, {sed_result}", source)
         except KeyError:
