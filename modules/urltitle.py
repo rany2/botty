@@ -10,10 +10,15 @@ import humanize
 import magic
 import requests
 import urllib3.exceptions
-from regexes import *
+from regexes import urlregex, ircspecial, twregex, ytregex
 from webpreview import web_preview
 
+
 class UrlTitle:
+    """
+    UrlTitle is a class that provides methods for getting the title of a URL.
+    """
+
     def __init__(self):
         self.session = requests.Session()
         headers = {
@@ -64,7 +69,6 @@ class UrlTitle:
         msg = f"{msg}\x03\x0F views - \x02{channel_name}\x03\x0F on \x02{date_uploaded}\x03\x0F - {yt_shortlink}"
         return msg
 
-
     def urltitle(self, nick, source, privmsg, netmask, is_channel, send_message):
         """
         urltitle gets the title of a URL and displays it in a nice IRC friendly format.
@@ -82,7 +86,9 @@ class UrlTitle:
         """
         ret = None
         bypass = False
-        for iterations, url_irc in enumerate(urlregex.findall(ircspecial.sub("", privmsg))):
+        for iterations, url_irc in enumerate(
+            urlregex.findall(ircspecial.sub("", privmsg))
+        ):
             if iterations > 2:
                 continue
             url_irc = url_irc[0]
@@ -93,7 +99,8 @@ class UrlTitle:
             )
             try:
                 response = self.session.head(
-                    url_with_http, allow_redirects=True,
+                    url_with_http,
+                    allow_redirects=True,
                 )
             except requests.exceptions.RequestException:
                 continue
@@ -110,7 +117,9 @@ class UrlTitle:
                     pass
 
                 try:
-                    finalmsg = [self.ytoutput(urllib.parse.parse_qs(parsed_url.query)["v"][0])]
+                    finalmsg = [
+                        self.ytoutput(urllib.parse.parse_qs(parsed_url.query)["v"][0])
+                    ]
                     bypass = True
                 except KeyError:
                     parsed_url = parsed_url._replace(netloc="yewtu.be")
@@ -120,7 +129,9 @@ class UrlTitle:
                 url_new = urllib.parse.urlunparse(parsed_url)
                 try:
                     response = self.session.get(
-                        url_new, allow_redirects=True, stream=True,
+                        url_new,
+                        allow_redirects=True,
+                        stream=True,
                     )
                 except requests.exceptions.RequestException:
                     continue

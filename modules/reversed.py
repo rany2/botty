@@ -2,9 +2,12 @@
 reversed is a module for botty to reverse text.
 """
 
-def reversed(nick, source, privmsg, netmask, is_channel, send_message):
+from regexes import ircspecial
+
+
+def mkreversed(nick, source, privmsg, netmask, is_channel, send_message):
     """
-    reversed reverses the text it receives.
+    mkreversed reverses the text it receives.
 
     Args:
         nick (str): the nick of the user who sent the message
@@ -19,9 +22,10 @@ def reversed(nick, source, privmsg, netmask, is_channel, send_message):
     """
     ret = None
     if privmsg.startswith(".rev "):
+        to_be_reversed = ircspecial.sub("", privmsg[len(".rev ") :])
         if is_channel:
-            send_message(f'{nick}, {privmsg[len(".rev ") :][::-1]}', source)
+            send_message(f"{nick}, {to_be_reversed[::-1]}", source)
         else:
-            send_message(f'{privmsg[len(".rev ") :][::-1]}', source)
+            send_message(f"{to_be_reversed[::-1]}", source)
         ret = True
     return ret

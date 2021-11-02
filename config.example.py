@@ -4,7 +4,7 @@ Configuration options for the IRC bot.
 
 from modules.ddg import DuckDuckGo
 from modules.deavmicomedy import deavmicomedy
-from modules.reversed import reversed
+from modules.reversed import mkreversed
 from modules.rot13 import rot13
 from modules.translate import Translate
 from modules.urltitle import UrlTitle
@@ -25,7 +25,7 @@ MODULES = [
     duckduckgo.duckduckgo,
     deavmicomedy,
     rot13,
-    reversed,
+    mkreversed,
     translate.translate,
     # This function will always be run.
     urltitle.urltitle,

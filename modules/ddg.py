@@ -5,6 +5,9 @@ DDG module for botty.
 import urllib.parse
 import requests
 
+from regexes import ircspecial
+
+
 class DuckDuckGo:
     """
     DuckDuckGo is a class that contains functions for searching DuckDuckGo
@@ -27,28 +30,23 @@ class DuckDuckGo:
         Returns:
             str: the first result from the search
         """
-        url = "https://api.duckduckgo.com/?q={}&format=json&pretty=1".format(
-            urllib.parse.quote_plus(query)
-        )
+        url = f"https://api.duckduckgo.com/?q={urllib.parse.quote_plus(query)}&format=json&pretty=1"
         response = self.session.get(url)
         data = response.json()
         try:
             result = data["AbstractText"]
             if result == "":
                 raise Exception
-            else:
-                return result
+            return result
         except (KeyError, Exception):
             try:
                 # Get the first result
                 result = data["RelatedTopics"][0]["Text"]
                 if result == "":
                     raise Exception
-                else:
-                    return result
+                return result
             except (KeyError, Exception):
                 return "No results found."
-
 
     def duckduckgo(self, nick, source, privmsg, netmask, is_channel, send_message):
         """
@@ -68,9 +66,10 @@ class DuckDuckGo:
         ret = None
         if privmsg.startswith(".ddg "):
             ret = True
+            query = ircspecial.sub("", privmsg[len(".ddg ") :])
             if is_channel:
-                send_message(f'{nick}, {self._duckduckgo(privmsg[len(".ddg ") :])}', source)
+                send_message(f"{nick}, {self._duckduckgo(query)}", source)
             else:
-                send_message(f'{self._duckduckgo(privmsg[len(".ddg ") :])}', source)
+                send_message(f"{self._duckduckgo(query)}", source)
             ret = True
         return ret

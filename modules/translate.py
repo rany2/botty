@@ -6,13 +6,14 @@ import json
 import urllib.parse
 
 import requests
-from regexes import *
+from regexes import ircspecial
 
 
 class Translate:
     """
     Translate is a class that translates text to the specified language
     """
+
     def __init__(self):
         """
         __init__ is the constructor for Translate

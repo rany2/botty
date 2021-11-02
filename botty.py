@@ -8,7 +8,15 @@ import socket
 import threading
 import time
 
-from config import *
+from config import (
+    SERVER_ADDR,
+    SERVER_PORT,
+    SERVER_NICK,
+    SERVER_PASS,
+    NICKSERV_PASS,
+    CHANNELS_TO_JOIN,
+    MODULES,
+)
 
 
 def split_text_by_bytes(text, max_length):

@@ -4,6 +4,7 @@ rot13 is a module for botty to rotate text 13 characters to the right.
 
 import codecs
 
+
 def _rot13(text):
     """
     rot13 rotates the text it receives 13 characters to the right.

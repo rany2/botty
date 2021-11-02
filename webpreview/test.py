@@ -1,12 +1,8 @@
 import unittest
+from urllib.parse import urlparse
 
-try:
-    from urlparse import urlparse  # Python2
-except ImportError:
-    from urllib.parse import urlparse  # Python3
-
-from webpreview.previews import *
 from webpreview.excepts import *
+from webpreview.previews import *
 
 
 class TestPreviewBase(unittest.TestCase):
