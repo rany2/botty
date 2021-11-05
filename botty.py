@@ -210,13 +210,16 @@ class IRCClient:
         # Run the functions
         try:
             for module in MODULES:
-                if (
-                    module(
-                        nick, source, privmsg, netmask, is_channel, self.send_message
-                    )
-                    == True
-                ):
-                    break
+                try:
+                    if (
+                        module(
+                            nick, source, privmsg, netmask, is_channel, self.send_message
+                        )
+                        == True
+                    ):
+                        break
+                except Exception as e:
+                    print(f"Error: {e}")
         finally:
             raise SystemExit(0)
 
