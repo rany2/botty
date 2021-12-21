@@ -38,3 +38,4 @@ MODULES = [
     # This function will always be run.
     urltitle.urltitle,
 ]
+MODULES_BACKGROUND = []

@@ -8,15 +8,9 @@ import socket
 import threading
 import time
 
-from config import (
-    CHANNELS_TO_JOIN,
-    MODULES,
-    NICKSERV_PASS,
-    SERVER_ADDR,
-    SERVER_NICK,
-    SERVER_PASS,
-    SERVER_PORT,
-)
+from config import (CHANNELS_TO_JOIN, MODULES, MODULES_BACKGROUND,
+                    NICKSERV_PASS, SERVER_ADDR, SERVER_NICK, SERVER_PASS,
+                    SERVER_PORT)
 
 
 def split_text_by_bytes(text, max_length):
@@ -131,6 +125,8 @@ class IRCClient:
         for channel in CHANNELS_TO_JOIN:
             self.send(f"JOIN {channel}")
             self.decider(run_once=True)
+        for module in MODULES_BACKGROUND:
+            threading.Thread(target=module, args=(self.send_message,)).start()
         self.decider()
 
     def send(self, msg):
@@ -213,7 +209,12 @@ class IRCClient:
                 try:
                     if (
                         module(
-                            nick, source, privmsg, netmask, is_channel, self.send_message
+                            nick,
+                            source,
+                            privmsg,
+                            netmask,
+                            is_channel,
+                            self.send_message,
                         )
                         == True
                     ):
