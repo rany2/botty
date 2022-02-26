@@ -55,7 +55,7 @@ class UrlTitle:
         )
         json_load = json.loads(response.content)
         title = json_load["title"]
-        length = humanize.precisedelta(json_load["lengthSeconds"])
+        length = json_load["lengthSeconds"]
         upvote = json_load["likeCount"]
         json_load2 = json.loads(response2.content)
         downvote = json_load2["dislikes"]
@@ -71,7 +71,9 @@ class UrlTitle:
             datetime(1970, 1, 1) + timedelta(seconds=int(json_load["published"]))
         ).strftime("%Y.%m.%d")
         yt_shortlink = f"https://youtu.be/{video_id}"
-        msg = f"\x02{title}\x03\x0F - length \x02{length}\x03\x0F - "
+        msg = f"\x02{title}\x03\x0F - "
+        if length > 0:
+            msg += f"length \x02{humanize.precisedelta(length)}\x03\x0F - "
         if upvote != 0 and downvote != 0:
             msg = f"{msg}\x0303↑{upvote}, \x0304↓{downvote} \x03\x0F (\x0303{ratio}\x03\x0F) - "
         msg = f"{msg}\x02{viewcount}"
