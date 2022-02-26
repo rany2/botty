@@ -10,9 +10,10 @@ import humanize
 import magic
 import requests
 import urllib3.exceptions
-from regexes import urlregex, ircspecial, twregex, ytregex
-from webpreview import web_preview
+
 from common import shorten
+from regexes import ircspecial, twregex, urlregex, ytregex
+from webpreview import web_preview
 
 
 class UrlTitle:

@@ -1,32 +1,9 @@
-import requests
 import urllib.parse
 
+import requests
+
+from common import shorten
 from regexes import ircspecial
-
-def shorten(text, limit):
-    """
-    Shortens a string to a given length while attempting to
-    preserve whole words.
-
-    Args:
-        text (str or bytes): The string to shorten.
-        limit (int): The maximum length of the string.
-    
-    Returns:
-        str: The shortened string.
-    """
-    if isinstance(text, bytes):
-        text = text.decode('utf-8')
-    elif not isinstance(text, str):
-        raise TypeError('text must be a string or bytes')
-    
-    if len(text) <= limit:
-        return text
-    
-    text = text[:limit]
-    if text.find(' ') != -1:
-        text = text[:text.rfind(' ')] + "..."
-    return text
 
 
 class UrbanDictionary:
@@ -51,13 +28,17 @@ class UrbanDictionary:
                 try:
                     return_data = []
                     return_data.append(
-                        f"Definition:\n \n{shorten(data['list'][item]['definition'], 140)}\n "
+                        f"\x02Definition:\x02 {shorten(data['list'][item]['definition'], 140)}\n"
                     )
                     return_data.append(
-                        f"Example:\n \n{shorten(data['list'][item]['example'], 140)}\n "
+                        f"\x02Example:\x02 {shorten(data['list'][item]['example'], 140)}\n"
                     )
-                    return_data.append(f"Author: {data['list'][item]['author']}")
-                    return_data.append(f"Permalink: {data['list'][item]['permalink']}")
+                    return_data.append(
+                        f"\x02Author:\x02 {data['list'][item]['author']}\n"
+                    )
+                    return_data.append(
+                        f"\x02Permalink:\x02 {data['list'][item]['permalink']}"
+                    )
                     return return_data
                 except IndexError:
                     return ["No definition found."]

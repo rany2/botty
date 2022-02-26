@@ -6,6 +6,7 @@ import json
 import urllib.parse
 
 import requests
+
 from regexes import ircspecial
 
 

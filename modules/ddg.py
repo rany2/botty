@@ -3,10 +3,11 @@ DDG module for botty.
 """
 
 import urllib.parse
+
 import requests
 
-from regexes import ircspecial
 from common import shorten
+from regexes import ircspecial
 
 
 class DuckDuckGo:
