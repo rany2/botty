@@ -47,11 +47,18 @@ class UrlTitle:
                 "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:95.0) Gecko/20100101 Firefox/95.0"
             },
         )
+        response2 = self.session.get(
+            f"https://returnyoutubedislikeapi.com/Votes?videoId={video_id}",
+            headers={
+                "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:95.0) Gecko/20100101 Firefox/95.0"
+            },
+        )
         json_load = json.loads(response.content)
         title = json_load["title"]
         length = humanize.precisedelta(json_load["lengthSeconds"])
         upvote = json_load["likeCount"]
-        downvote = json_load["dislikeCount"]
+        json_load2 = json.loads(response2.content)
+        downvote = json_load2["dislikes"]
         try:
             ratio = f"{(upvote/(downvote+upvote) * 100):.1f}%"
         except ZeroDivisionError:
