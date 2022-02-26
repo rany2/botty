@@ -8,9 +8,16 @@ import socket
 import threading
 import time
 
-from config import (CHANNELS_TO_JOIN, MODULES, MODULES_BACKGROUND,
-                    NICKSERV_PASS, SERVER_ADDR, SERVER_NICK, SERVER_PASS,
-                    SERVER_PORT)
+from config import (
+    CHANNELS_TO_JOIN,
+    MODULES,
+    MODULES_BACKGROUND,
+    NICKSERV_PASS,
+    SERVER_ADDR,
+    SERVER_NICK,
+    SERVER_PASS,
+    SERVER_PORT,
+)
 
 
 def split_text_by_bytes(text, max_length):
