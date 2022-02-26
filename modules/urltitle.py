@@ -12,6 +12,7 @@ import requests
 import urllib3.exceptions
 from regexes import urlregex, ircspecial, twregex, ytregex
 from webpreview import web_preview
+from common import shorten
 
 
 class UrlTitle:
@@ -171,6 +172,7 @@ class UrlTitle:
                     ]
 
                 if isinstance(title, str):
+                    title = shorten(title, 500)
                     title = f'[ \x0303{parsed_url.netloc}\x03\x0F ] \x02{ircspecial.sub("", " ".join(title.split()))}'
                     finalmsg = [title]  # , description ]
 

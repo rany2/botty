@@ -6,6 +6,7 @@ import urllib.parse
 import requests
 
 from regexes import ircspecial
+from common import shorten
 
 
 class DuckDuckGo:
@@ -37,14 +38,14 @@ class DuckDuckGo:
             result = data["AbstractText"]
             if result == "":
                 raise Exception
-            return result
+            return shorten(result, 500)
         except (KeyError, Exception):
             try:
                 # Get the first result
                 result = data["RelatedTopics"][0]["Text"]
                 if result == "":
                     raise Exception
-                return result
+                return shorten(result, 500)
             except (KeyError, Exception):
                 return "No results found."
 

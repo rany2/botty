@@ -5,6 +5,7 @@ sedbot module for botty.
 import re
 
 from regexes import ircspecial
+from common import shorten
 
 
 def a_poor_mans_sed_implementation(text, sed_pattern):
@@ -133,9 +134,9 @@ class SedBot:
             return None
 
         try:
-            sed_result = a_poor_mans_sed_implementation(
+            sed_result = shorten(a_poor_mans_sed_implementation(
                 self.messages[source][_netmask], _privmsg
-            )
+            ), 500)
             send_message(f"{nick}, {sed_result}", source)
         except (KeyError, re.error):
             pass
