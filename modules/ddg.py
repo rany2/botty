@@ -4,6 +4,7 @@ DDG module for botty.
 
 import urllib.parse
 
+import bs4
 import requests
 
 from common import shorten
@@ -48,7 +49,25 @@ class DuckDuckGo:
                     raise Exception
                 return shorten(result, 500)
             except (KeyError, Exception):
-                return "No results found."
+                try:
+                    url = f"https://html.duckduckgo.com/html/?q={urllib.parse.quote_plus(query)}"
+                    response = self.session.get(
+                        url,
+                        headers={
+                            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36"
+                        },
+                    )
+                    data = response.text
+                    soup = bs4.BeautifulSoup(data, "html.parser")
+                    result = soup.find("div", id="links").find("div", class_="result")
+                    if result is None:
+                        raise Exception
+                    snippet = result.find("a", class_="result__snippet").text
+                    if not snippet:
+                        raise Exception
+                    return shorten(snippet, 500)
+                except Exception:
+                    return "No results found."
 
     def duckduckgo(self, nick, source, privmsg, netmask, is_channel, send_message):
         """
