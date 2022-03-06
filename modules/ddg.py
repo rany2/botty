@@ -59,7 +59,7 @@ class DuckDuckGo:
                     )
                     data = response.text
                     soup = bs4.BeautifulSoup(data, "html.parser")
-                    result = soup.find("div", id="links").find("div", class_="result")
+                    result = soup.find("div", id="links").find("div", class_="web-result")
                     if result is None:
                         raise Exception
                     snippet = result.find("a", class_="result__snippet").text
