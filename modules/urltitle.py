@@ -24,7 +24,7 @@ class UrlTitle:
     def __init__(self):
         self.session = requests.Session()
         headers = {
-            "User-Agent": "urlircbot/1.0",
+            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:95.0) Gecko/20100101 Firefox/95.0",
             "Accept": "text/html,application/xhtml+xml,*/*",
             "Accept-Language": "en-US,en;q=0.5",
         }
@@ -43,9 +43,6 @@ class UrlTitle:
         """
         response = self.session.get(
             f"https://invidious.snopyta.org/api/v1/videos/{video_id}",
-            headers={
-                "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:95.0) Gecko/20100101 Firefox/95.0"
-            },
         )
         response2 = self.session.get(
             f"https://returnyoutubedislikeapi.com/Votes?videoId={video_id}",
