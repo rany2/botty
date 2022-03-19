@@ -36,9 +36,6 @@ def ping(nick, source, privmsg, netmask, is_channel, send_message):
                         msg = line.strip()
 
         if msg.strip() != "":
-            if is_channel:
-                send_message(f"{nick}, {msg}", source)
-            else:
-                send_message(f"{msg}", source)
+            send_message(f"{msg}", source)
 
     return ret

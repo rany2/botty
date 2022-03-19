@@ -40,9 +40,6 @@ def deavmicomedy(nick, source, privmsg, netmask, is_channel, send_message):
     ret = None
     if privmsg.startswith(".deavmicomedy "):
         to_be_funnied = ircspecial.sub("", privmsg[len(".deavmicomedy ") :])
-        if is_channel:
-            send_message(f"{nick}, {_deavmicomedy(to_be_funnied)}", source)
-        else:
-            send_message(f"{_deavmicomedy(to_be_funnied)}", source)
+        send_message(f"{_deavmicomedy(to_be_funnied)}", source)
         ret = True
     return ret

@@ -59,7 +59,9 @@ class DuckDuckGo:
                     )
                     data = response.text
                     soup = bs4.BeautifulSoup(data, "html.parser")
-                    result = soup.find("div", id="links").find("div", class_="web-result")
+                    result = soup.find("div", id="links").find(
+                        "div", class_="web-result"
+                    )
                     if result is None:
                         raise Exception
                     snippet = result.find("a", class_="result__snippet").text
@@ -86,11 +88,7 @@ class DuckDuckGo:
         """
         ret = None
         if privmsg.startswith(".ddg "):
-            ret = True
             query = ircspecial.sub("", privmsg[len(".ddg ") :])
-            if is_channel:
-                send_message(f"{nick}, {self._duckduckgo(query)}", source)
-            else:
-                send_message(f"{self._duckduckgo(query)}", source)
+            send_message(f"{self._duckduckgo(query)}", source)
             ret = True
         return ret

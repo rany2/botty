@@ -140,7 +140,7 @@ class SedBot:
                 ),
                 500,
             )
-            send_message(f"{nick}, {sed_result}", source)
+            send_message(f"{sed_result}", source)
         except (KeyError, re.error):
             pass
 

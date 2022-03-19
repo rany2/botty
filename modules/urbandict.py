@@ -77,26 +77,17 @@ class UrbanDictionary:
                 try:
                     def_num = int(privmsg[0][1:])
                 except ValueError:
-                    if is_channel:
-                        send_message(f"{nick}, Invalid definition number.", source)
-                    else:
-                        send_message(f"Invalid definition number.", source)
+                    send_message(f"Invalid definition number.", source)
                     return True
                 query = ircspecial.sub("", " ".join(privmsg[1:]))
             else:
                 query = ircspecial.sub("", privmsg[len(".ub ") :])
                 def_num = 1
             if def_num <= 0:
-                if is_channel:
-                    send_message(f"{nick}, Invalid definition number.", source)
-                else:
-                    send_message(f"Invalid definition number.", source)
+                send_message(f"Invalid definition number.", source)
                 return True
             ub_list = self.get_definition(query, def_num)
             for ub_item in ub_list:
-                if is_channel:
-                    send_message(f"{nick}, {ub_item}", source)
-                else:
-                    send_message(f"{ub_item}", source)
+                send_message(f"{ub_item}", source)
             return True
         return None

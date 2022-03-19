@@ -35,9 +35,6 @@ def rot13(nick, source, privmsg, netmask, is_channel, send_message):
     """
     ret = None
     if privmsg.startswith(".rot13 "):
-        if is_channel:
-            send_message(f'{nick}, {_rot13(privmsg[len(".rot13 ") :])}', source)
-        else:
-            send_message(f'{_rot13(privmsg[len(".rot13 ") :])}', source)
+        send_message(f'{_rot13(privmsg[len(".rot13 ") :])}', source)
         ret = True
     return ret

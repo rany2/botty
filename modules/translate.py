@@ -66,9 +66,6 @@ class Translate:
                 text_to_trans = ircspecial.sub("", privmsg[len(".tr ") :])
                 tolang = "en"
             transed = f"{self._translate(text_to_trans, tolang)}"
-            if is_channel:
-                send_message(f"{nick}, {transed}", source)
-            else:
-                send_message(f"{transed}", source)
+            send_message(f"{transed}", source)
             ret = True
         return ret

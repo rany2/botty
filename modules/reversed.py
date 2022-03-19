@@ -23,9 +23,6 @@ def mkreversed(nick, source, privmsg, netmask, is_channel, send_message):
     ret = None
     if privmsg.startswith(".rev "):
         to_be_reversed = ircspecial.sub("", privmsg[len(".rev ") :])
-        if is_channel:
-            send_message(f"{nick}, {to_be_reversed[::-1]}", source)
-        else:
-            send_message(f"{to_be_reversed[::-1]}", source)
+        send_message(f"{to_be_reversed[::-1]}", source)
         ret = True
     return ret
