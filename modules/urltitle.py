@@ -7,6 +7,7 @@ import urllib.parse
 from datetime import datetime, timedelta
 
 import humanize
+import lxml.html
 import magic
 import requests
 import urllib3.exceptions
@@ -150,8 +151,6 @@ class UrlTitle:
                 for i in response.iter_content(chunk_size=65536, decode_unicode=False):
                     content = i
                     break
-                # Get encoding from magic module
-                encoding = magic.Magic(mime_encoding=True).from_buffer(content)
                 length = ""
                 try:
                     if response.headers["Content-Length"]:
@@ -162,6 +161,35 @@ class UrlTitle:
                         )
                 except KeyError:
                     pass
+                # Default HTML encoding should be ISO-8859-1
+                encoding = "ISO-8859-1"
+                if response.encoding:
+                    encoding = response.encoding
+                else:
+                    try:
+                        # If HTML content-type is set to text/html, parse with lxml to get encoding
+                        if " ".join(response.headers["Content-Type"])[0] == "text/html":
+                            try:
+                                # Get from meta charset=
+                                encoding = (
+                                    lxml.html.fromstring(content)
+                                    .xpath("//meta[@charset]")[0]
+                                    .attrib["charset"]
+                                )
+                            except IndexError:
+                                try:
+                                    # Get from meta content-type
+                                    encoding = (
+                                        lxml.html.fromstring(content)
+                                        .xpath("//meta[@http-equiv='Content-Type']")[0]
+                                        .attrib["content"]
+                                        .split(";")[1]
+                                        .split("=")[1]
+                                    )
+                                except IndexError:
+                                    pass
+                    except KeyError:
+                        pass
 
                 try:
                     title, description, image = web_preview(
