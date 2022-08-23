@@ -4,7 +4,7 @@ certifi==2021.10.8
 charset-normalizer==2.0.7
 humanize==3.12.0
 idna==3.3
-lxml==4.6.5
+lxml==4.9.1
 python-magic==0.4.24
 requests==2.26.0
 soupsieve==2.2.1
