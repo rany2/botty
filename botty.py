@@ -122,7 +122,7 @@ class IRCClient:
             self.send(f"PRIVMSG NickServ :IDENTIFY {self.nickserv_pass}\r\n")
             self.decider(run_once=True)
         time.sleep(1)
-        for channel in CHANNELS_TO_JOIN:
+        for channel in self.channels_to_join:
             self.send(f"JOIN {channel}")
             self.decider(run_once=True)
         for module in MODULES_BACKGROUND:
